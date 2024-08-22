@@ -3,8 +3,13 @@ include ../../mixins/filterStatus.pug
 include ../../mixins/search.pug
 include ../../mixins/formChangeMulti.pug
 include ../../mixins/pagination.pug
+include ../../mixins/sort.pug
+include ../../mixins/alert.pug
 
 block main 
+    +alert-success(5000)
+    +alert-error(5000)
+    
     h1 Quản lý nhân viên 
 
     .card.mb-3 
@@ -15,6 +20,8 @@ block main
                     +filter-status(filterStatus)
                 .col-6  
                     +search(keyword)
+
+    +sort()
     
     .card.mb-3 
         .card-header Danh sách nhân viên
@@ -38,6 +45,7 @@ block main
                                 input(type="checkbox" name="checkall")
                             th STT
                             th Hình ảnh
+                            th CMND
                             th Họ và tên
                             th Email
                             th Phân quyền
@@ -56,6 +64,7 @@ block main
                                         width="100px"
                                         height="auto"
                                     )
+                                td #{item.staff_id}    
                                 td #{item.fullName}
                                 td #{item.email}
                                 td #{item.role_id}
@@ -78,11 +87,11 @@ block main
                                         ) Không hoạt động
                                 td
                                     a(
-                                        href=`${prefixAdmin}/products/detail/${item.id}`
+                                        href=`${prefixAdmin}/staffs/detail/${item.id}`
                                         class="btn btn-secondary btn-sm"
                                     ) Chi tiết 
                                     a(
-                                        href=`${prefixAdmin}/products/edit/${item.id}`
+                                        href=`${prefixAdmin}/staffs/edit/${item.id}`
                                         class="btn btn-warning btn-sm"
                                     ) Sửa
                                     button(

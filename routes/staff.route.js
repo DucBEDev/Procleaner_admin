@@ -14,5 +14,8 @@ router.post('/create', upload.single('avatar'), uploadCloud.upload, controller.c
 router.patch('/change-multi', controller.changeMulti);
 router.patch('/change-status/:status/:id', controller.changeStatus);
 router.delete('/delete/:id', controller.deleteItem);
+router.get('/edit/:id', controller.edit);
+router.patch('/edit/:id', upload.single('avatar'), uploadCloud.upload, controller.editPatch);
+router.get('/detail/:id', controller.detail);
 
 module.exports = router;

@@ -137,7 +137,6 @@ if (formChangeMulti) {
             })
 
             inputIds.value = listIds.join(", ");
-            console.log(inputIds)
             formChangeMulti.submit();
         }
     });
@@ -201,3 +200,42 @@ if (buttonsPagination.length > 0) {
     })
 }
 // End Pagination
+
+// Sort
+const sort = document.querySelector("[sort]");
+
+if (sort) {
+    const sortSelect = sort.querySelector("[sort-select]");
+    const sortClear = sort.querySelector("[sort-clear]");
+    let url = new URL(window.location.href);
+
+    sortSelect.addEventListener("change", (e) => {
+        const value = e.target.value;
+        const [sortKey, sortValue] = value.split("-");
+
+        url.searchParams.set("sortKey", sortKey);
+        url.searchParams.set("sortValue", sortValue);
+
+        window.location.href = url;
+    });
+
+    sortClear.addEventListener("click", () => {
+        url.searchParams.delete("sortKey");
+        url.searchParams.delete("sortValue");
+
+        window.location.href = url;
+    });
+
+    // Get current sort from URL
+    const currentSortKey = url.searchParams.get("sortKey");
+    const currentSortValue = url.searchParams.get("sortValue");
+
+    if (currentSortKey && currentSortValue) {
+        const stringSort = `${currentSortKey}-${currentSortValue}`;
+        const optionSelected = sortSelect.querySelector(`option[value='${stringSort}']`);
+
+        optionSelected.selected = true;
+    }
+}
+// End Sort
+

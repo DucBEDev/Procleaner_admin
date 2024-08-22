@@ -17,7 +17,7 @@ body .header {
 
 /* Body */
 .body .sider {
-    width: 15vw;
+    width: 10vw;
     background: #323232;
     color: #fff;
     height: calc(100vh - 56px);
@@ -29,7 +29,7 @@ body .header {
 .body .main {
     margin: 15px;
     position: relative;
-    left: 15vw;
+    left: 10vw;
     width: calc(100% - 250px);
     margin-top: 80px;
 }

@@ -39,8 +39,15 @@ module.exports.index = async (req, res) => {
         countStaffs
     );
 
+    // Sort
+    let sort = {};
+    if (req.query.sortKey && req.query.sortValue) {
+        sort[req.query.sortKey] = req.query.sortValue;
+    }
+
     const records = await Staff
                             .find(find)
+                            .sort(sort)
                             .select("-password")
                             .limit(objectPagination.limitItems)
                             .skip(objectPagination.skip);
@@ -86,6 +93,7 @@ module.exports.createPost = async (req, res) => {
         const record = new Staff(req.body);
         await record.save();
 
+        req.flash('success', 'Khởi tạo nhân viên thành công');
         res.redirect(`${systemConfig.prefixAdmin}/staffs`);
     }
 }
@@ -101,21 +109,21 @@ module.exports.changeMulti = async (req, res) => {
                 { _id: { $in: ids } },
                 { status: 'active' }
             );
-            // req.flash("success", `Cập nhật trạng thái cho ${ids.length} nhân viên thành công!`);
+            req.flash("success", `Cập nhật trạng thái cho ${ids.length} nhân viên thành công!`);
             break;
         case "inactive":
             await Staff.updateMany(
                 { _id: { $in: ids } },
                 { status: 'inactive' }
             );
-            // req.flash("success", `Cập nhật trạng thái cho ${ids.length} nhân viên thành công!`);
+            req.flash("success", `Cập nhật trạng thái cho ${ids.length} nhân viên thành công!`);
             break;
         case "delete-all":
             await Staff.updateMany(
                 { _id: { $in: ids } },
                 { deleted: true }
             );
-            // req.flash("success", `Xóa ${ids.length} nhân viên thành công!`);
+            req.flash("success", `Xóa ${ids.length} nhân viên thành công!`);
             break;
         default:
             break;
@@ -134,7 +142,7 @@ module.exports.changeStatus = async (req, res) => {
         { status: status }
     )
 
-    // req.flash("success", "Cập nhật thành công");
+    req.flash("success", "Cập nhật thành công");
     res.redirect("back");
 }
 
@@ -147,6 +155,87 @@ module.exports.deleteItem = async (req, res) => {
         { deleted: true }
     )
 
-    // req.flash("success", "Cập nhật thành công");
+    req.flash("success", "Xóa thành công");
     res.redirect("back");
+}
+
+// [GET] /admin/staffs/edit/:id
+module.exports.edit = async (req, res) => {
+    let find = {
+        _id: req.params.id,
+        deleted: false
+    };
+
+    const staff = await Staff.findOne(find).select("-password");
+    let newBirthDate = staff.birthDate.toISOString().split('T')[0];
+
+    res.render("pages/staffs/edit", {
+        pageTitle: "Chỉnh sửa thông tin nhân viên",
+        staff: staff,
+        newBirthDate: newBirthDate
+    })
+}
+
+// [PATCH] /admin/staffs/edit/:id
+module.exports.editPatch = async (req, res) => {
+    const staffIdExist = await Staff.findOne({
+        _id: { $ne: req.params.id },
+        email: req.body.staff_id,
+        deleted: false
+    });
+    if (staffIdExist) {
+        req.flash("error", "CMND đã tồn tại");
+        res.redirect("back");
+        return;
+    }
+
+    const phoneExist = await Staff.findOne({
+        _id: { $ne: req.params.id },
+        email: req.body.phone,
+        deleted: false
+    });
+    if (phoneExist) {
+        req.flash("error", "Số điện thoại đã tồn tại");
+        res.redirect("back");
+        return;
+    }
+
+    const emailExist = await Staff.findOne({
+        _id: { $ne: req.params.id },
+        email: req.body.email,
+        deleted: false
+    });
+    if (emailExist) {
+        req.flash("error", "Email đã tồn tại");
+        res.redirect("back");
+        return;
+    }
+
+    if (req.body.password) {
+        req.body.password = md5(req.body.password);
+    }
+    else {
+        delete req.body.password;
+    }
+
+    await Staff.updateOne({ _id: req.params.id }, req.body);
+    req.flash("success", "Cập nhật thông tin nhân viên thành công");
+    res.redirect(`${systemConfig.prefixAdmin}/staffs`);
+}
+
+// [GET] /admin/staffs/detail/:id
+module.exports.detail = async (req, res) => {
+    let find = {
+        _id: req.params.id,
+        deleted: false
+    };
+
+    const staff = await Staff.findOne(find).select("-password");
+    let newBirthDate = staff.birthDate.toISOString().split('T')[0];
+
+    res.render("pages/staffs/detail", {
+        pageTitle: "Chi tiết thông tin nhân viên",
+        staff: staff,
+        newBirthDate: newBirthDate
+    })
 }
