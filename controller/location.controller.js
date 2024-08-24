@@ -7,9 +7,7 @@ const systemConfig = require("../config/system");
 
 // [GET] /admins/locations
 module.exports.index = async (req, res) => {
-    const locations = await Location.find({
-        deleted: false
-    });
+    const locations = await Location.find();
 
     res.render("pages/locations/index", {
         pageTitle: "Danh sách địa điểm",
@@ -19,10 +17,7 @@ module.exports.index = async (req, res) => {
 
 // [GET] /admins/locations/fetch
 module.exports.fetchData = async (req, res) => {
-    const locations = await Location.find({
-        deleted: false,
-        province: req.query.province
-    });
+    const locations = await Location.find({ province: req.query.province });
 
     res.json(locations);
 }
@@ -39,14 +34,12 @@ module.exports.createProvincePost = async (req, res) => {
     const location = new Location(req.body);
     location.save();
 
-    res.redirect("/admin/locations");
+    res.redirect("back");
 }
 
 // [GET] /admin/locations/createDistrict
 module.exports.createDistrict = async (req, res) => {
-    const locations = await Location.find({
-        deleted: false
-    });
+    const locations = await Location.find();
 
     res.render("pages/locations/createDistrict", {
         pageTitle: "Thêm quận",
@@ -56,12 +49,37 @@ module.exports.createDistrict = async (req, res) => {
 
 // [POST] /admin/locations/createDistrict
 module.exports.createDistrictPost = async (req, res) => {
+    const objectDistrict = {
+        district: req.body.district
+    };
+
     await Location.updateOne(
         { province: req.body.province },
-        {
-            $push: { districts: req.body.district }
-        }
+        { $push: { districts: objectDistrict } }
     );
     req.flash("success", "Cập nhật thành công!");
+    res.redirect("back");
+}
+
+// [DELETE] /admin/locations/deleteProvince/:id
+module.exports.deleteProvince = async (req, res) => {
+    const id = req.params.id;
+
+    await Location.deleteOne({ _id: id });
+
+    req.flash("success", "Xóa thành công.");
+    res.redirect("back");
+}
+
+// [DELETE] /admin/locations/deleteDistrict/:id/:districtId
+module.exports.deleteDistrict = async (req, res) => {
+    const id = req.params.id;
+    const districtId = req.params.districtId;
+    
+    await Location.updateOne(
+        { _id: id },
+        { $pull: { districts: { _id: districtId } } }
+    );
+    
     res.redirect("back");
 }

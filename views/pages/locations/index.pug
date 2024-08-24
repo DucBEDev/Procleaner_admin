@@ -1,6 +1,9 @@
 extends ../../layouts/default.pug
+include ../../mixins/alert.pug
 
 block main 
+    +alert-success(5000)
+
     h1 Danh sách địa điểm (Bấm vào tên tỉnh để hiện danh sách quận)
 
     .card.mb-3 
@@ -21,21 +24,19 @@ block main
                         th Tên tỉnh/thành phố
                         th Hành động 
                 tbody 
-                    if (locations)
+                    if (locations.length > 0)
                         each item in locations
                             tr
-                                td
-                                    span(
-                                        data-name=item.province
-                                        chooseProvince
-                                    ) #{item.province} 
+                                td(chooseProvince)
+                                    span(data-name=item.province) #{item.province} 
                                 td 
                                     button(
                                         class="btn btn-danger btn-sm"
-                                        button-delete
+                                        button-delete-province
                                         data-id=item.id
                                     ) Xóa 
-                        else 
+                    else 
+                        td 
                             span(class="text-center") Chưa có địa điểm nào được thêm
 
     .card.mb-3 
@@ -57,17 +58,12 @@ block main
                         th Tên tỉnh/thành phố tương ứng
                         th Hành động 
                 tbody(displayDistricts) 
-                    if (locations)
-                        
-                    else 
-                        td 
-                            span(class="text-center") Chưa có địa điểm nào được thêm
 
         form(
             action=""
             method="POST"
-            id="form-delete-item"
-            data-path=`${prefixAdmin}/staffs/delete`
+            id="form-delete-location"
+            data-path=`${prefixAdmin}/locations/delete`
         )
     
     script(src="/js/location.js")

@@ -10,6 +10,7 @@ router.get("/createProvince", controller.createProvince);
 router.post("/createProvince", validate.createProvincePost, controller.createProvincePost);
 router.get("/createDistrict", controller.createDistrict);
 router.post("/createDistrict", validate.createDistrictPost, controller.createDistrictPost);
-
+router.delete("/deleteProvince/:id", controller.deleteProvince);
+router.delete("/deleteDistrict/:id/:districtId", controller.deleteDistrict);
 
 module.exports = router;
