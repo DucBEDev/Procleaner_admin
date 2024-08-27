@@ -1,4 +1,5 @@
 extends ../../layouts/default.pug
+include ../../mixins/moment.pug
 
 block main 
     if (staff.staff_id)
@@ -8,7 +9,9 @@ block main
         div(class="mb-4") Họ và tên: <b>#{staff.fullName}</b>
     
     if (newBirthDate)
-        div(class="mb-4") Ngày sinh: <b>#{newBirthDate}</b>
+        div(class="mb-4") Ngày sinh: <b>
+        +formatDate(staff.birthDate)
+        </b>
     
     if (staff.phone)
         div(class="mb-4") SĐT: <b>#{staff.phone}</b>

@@ -110,3 +110,41 @@ body .header {
     cursor: pointer;
 }
 /* End Show alert */
+
+/* Table show calendar */
+.myCalendarElement {
+    width:70px;
+    height:70px;
+}
+
+.busyDate{
+    background-color:#cc3300;
+    color:#02571c;
+}	
+
+.busyDate:hover{
+    background-color:#cc3355;
+	color:#02571c;
+}
+
+.passedDate{
+    background-color:#9c9c9c;
+}
+
+.normalDate{
+    background-color:#99cc99;
+	color:#02571c;
+}
+
+.normalDate:hover{
+    background-color:#99ccbb;
+	color:#02571c;
+}
+
+.myCalendar th {
+	border-radius:5px;
+    color:#02571c;
+	background-color:#8cc13d;
+	text-align: center;
+}
+/* End Table show calendar */

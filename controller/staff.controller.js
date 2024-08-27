@@ -231,11 +231,69 @@ module.exports.detail = async (req, res) => {
     };
 
     const staff = await Staff.findOne(find).select("-password");
-    let newBirthDate = staff.birthDate.toISOString().split('T')[0];
 
     res.render("pages/staffs/detail", {
         pageTitle: "Chi tiết thông tin nhân viên",
+        staff: staff
+    })
+}
+
+// [GET] /admin/staffs/setOffDate/:id
+module.exports.setOffDate = async (req, res) => {
+    const staff = await Staff.findOne({ _id: req.params.id }).select("avatar staff_id fullName birthDate phone birthPlace");
+    
+    const today = new Date();
+    const todayInMonth = today.getDate() - 1;
+    const numberOfDaysInMonth = new Date(today.getUTCFullYear(), today.getMonth() + 1, 0).getDate();
+    
+    // Set today to the first day of the month
+    let currentTime = today.getTime();
+    currentTime -= todayInMonth * 24 * 60 * 60 * 1000;
+    today.setTime(currentTime);
+    
+    // Set today to Sunday before the first day of the month
+    const startDayOfThisMonthInWeek = today.getDay();
+    currentTime -= startDayOfThisMonthInWeek * 24 * 60 * 60 * 1000;
+    today.setTime(currentTime);
+
+    const numberOfDaysInCalendar = numberOfDaysInMonth + startDayOfThisMonthInWeek;
+    const numberOfWeeks = numberOfDaysInCalendar / 7;
+
+    const weekList = [];
+
+    for (let i = 0; i < numberOfWeeks; i++) {
+        const week = {
+            name: i + "",
+            dateList: []
+        };
+
+        for (let j = 0; j < 7 && (i * 7 + j) < numberOfDaysInCalendar; j++) {
+            today.setTime(currentTime + ((i * 7 + j) * 24 * 60 * 60 * 1000));
+            
+            const day = new Date(today);
+            const date = {
+                value: today.getDate(),
+                day: day,
+                classType: "normalDate",
+                icon: ""
+            };
+            
+            week.dateList.push(date);
+        }
+
+        weekList.push(week);
+    }
+
+    for (let i = 0; i < todayInMonth + startDayOfThisMonthInWeek; i++) {
+        const week = (i - (i % 7)) / 7;
+        const day = i % 7;
+
+        weekList[week].dateList[day].classType = "passedDate";
+    }
+
+    res.render("pages/staffs/setOffDate", {
+        pageTitle: "Cập nhật ngày nghỉ nhân viên",
         staff: staff,
-        newBirthDate: newBirthDate
+        weekList: weekList
     })
 }

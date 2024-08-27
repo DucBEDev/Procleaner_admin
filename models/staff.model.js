@@ -16,6 +16,11 @@ const staffSchema = new mongoose.Schema({
     salary: Number,
     role_id: String,
     status: String,
+    offDateList: [
+        {
+            offDate: Date
+        }
+    ],
     deleted: {
         type: Boolean,
         default: false
