@@ -13,25 +13,14 @@ const helperSchema = new mongoose.Schema({
     address : String,
     workingArea : {
         province: String,
-        districts: [
-            {
-                district: String
-            }
-        ]
+        districts: []
     },  
-    jobs: [
-        {
-            jobName: String
-        }
-    ],
+    jobDetail: String,
+    jobs: [],
     yearOfExperience: Number,
     experienceDescription: String,
     avatar : String,
-    healthCertificates : [
-        {
-            healthCertificate: String
-        }
-    ],
+    healthCertificates : [],
     salary_id: String,
     gender: String,
     nationality : String,
