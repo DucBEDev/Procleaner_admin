@@ -1,13 +1,10 @@
 extends ../../layouts/default.pug
-include ../../mixins/alert.pug
 
 block main 
-    +alert-error(5000)
-
     h1(class="mb-4") Thêm mới người giúp việc
 
     form(
-        action=`${prefixAdmin}/helpers/create`
+        action=`${prefixAdmin}/helpers/edit/${helper.id}?_method=PATCH`
         method="POST"
         enctype="multipart/form-data"
         form-create-helper
@@ -19,6 +16,7 @@ block main
                 id="helper_id"
                 name="helper_id"
                 class="form-control"
+                value=helper.helper_id
                 required 
             )
         div(class="form-group")
@@ -28,6 +26,7 @@ block main
                 id="fullName"
                 name="fullName"
                 class="form-control"
+                value=helper.fullName
                 required 
             )
         div(class="form-group")
@@ -37,6 +36,7 @@ block main
                 id="birthDate"
                 name="birthDate"
                 class="form-control"
+                value=newBirthDate
                 required 
             )
         div(class="form-group")
@@ -46,21 +46,39 @@ block main
                 id="nationality"
                 name="nationality"
                 class="form-control"
-                value="Kinh"
+                value=helper.nationality
                 required 
             )
         div(class="form-group")
             label(for="gender") Giới tính: 
             select(name="gender" id="gender" class="form-control")
-                option(value="male") Nam 
-                option(value="female") Nữ
+                option(
+                    value="male"
+                    checked=(helper.gender == "male") ? true : false
+                ) Nam 
+                option(
+                    value="female"
+                    checked=(helper.gender == "female") ? true : false
+                ) Nữ
         div(class="form-group")
             label(for="educationLevel") Trình độ học vấn: 
             select(name="educationLevel" id="educationLevel" class="form-control")
-                option(value="university") Đại học 
-                option(value="college") Cao đẳng
-                option(value="vocational") Trung cấp
-                option(value="general") Phổ thông
+                option(
+                    value="university"
+                    checked=(helper.educationLevel == "university") ? true : false
+                ) Đại học 
+                option(
+                    value="college"
+                    checked=(helper.educationLevel == "college") ? true : false
+                ) Cao đẳng
+                option(
+                    value="vocational"
+                    checked=(helper.educationLevel == "vocational") ? true : false
+                ) Trung cấp
+                option(
+                    value="general"
+                    checked=(helper.educationLevel == "general") ? true : false
+                ) Phổ thông
         div(class="form-group")
             label(for="height") Chiều cao (cm) *
             input(
@@ -68,6 +86,7 @@ block main
                 id="height"
                 name="height"
                 class="form-control"
+                value=helper.height
                 required 
             )
         div(class="form-group")
@@ -77,6 +96,7 @@ block main
                 id="weight"
                 name="weight"
                 class="form-control"
+                value=helper.weight
                 required 
             )
         div(class="form-group")
@@ -86,6 +106,7 @@ block main
                 id="phone"
                 name="phone"
                 class="form-control"
+                value=helper.phone
                 required 
             )
         div(class="form-group")
@@ -95,6 +116,7 @@ block main
                 id="birthPlace"
                 name="birthPlace"
                 class="form-control"
+                value=helper.birthPlace
                 required 
             )
         div(class="form-group")
@@ -104,6 +126,7 @@ block main
                 id="address"
                 name="address"
                 class="form-control"
+                value=helper.address
                 required 
             )
         div(class="form-group")
@@ -115,7 +138,7 @@ block main
                 name="jobDetail"
                 id="fullTime"
                 value="fullTime"
-                checked
+                checked=(helper.jobDetail == "fullTime") ? true : false
             )
 
             label(for="partTime") Part-time
@@ -124,19 +147,32 @@ block main
                 name="jobDetail"
                 value="partTime"
                 id="partTime"
+                checked=(helper.jobDetail == "partTime") ? true : false
             )
         div(class="form-group" workingArea)
             label(for="workingArea") Khu vực làm việc *
             
             label(for="province") Tỉnh/Thành phố 
             select(name="province" id="province" chooseProvinceSelect)
-                option(disabled selected)
                 each item in locations 
-                    option(value=item.province) #{item.province}
+                    option(
+                        value=item.province
+                        selected=(helper.workingArea.province == item.province) ? true : false
+                    ) #{item.province}
 
             label(for="district") Quận 
                 div(chooseDistricts)
-            
+                    each location in locations 
+                        if (helper.workingArea.province == location.province)
+                            each item, index in location.districts
+                                div 
+                                    input(
+                                        type="checkbox"
+                                        name="districts"
+                                        value=item.district
+                                        checked=(helper.workingArea.districts[index] == item.district)
+                                    ) 
+                                    label(for="districts") #{item.district}
         div(class="form-group")
             label(for="yearOfExperience") Số năm kinh nghiệm *
             input(
@@ -144,6 +180,7 @@ block main
                 id="yearOfExperience"
                 name="yearOfExperience"
                 class="form-control"
+                value=helper.yearOfExperience
                 required 
             )
         div(class="form-group")
@@ -155,6 +192,7 @@ block main
                     type="checkbox"
                     name="jobs"
                     value=item.id
+                    checked=(helper.jobs.includes(item.id) ? true : false)
                 ) 
         div(class="form-group")
             label(for="experienceDescription") Mô tả kinh nghiệm *
@@ -163,7 +201,7 @@ block main
                 id="experienceDescription"
                 name="experienceDescription"
                 rows="5"
-            ) 
+            ) #{helper.experienceDescription}
         div(class="form-group")
             label(for="fixed-salary") Lương cố định *
             input(
@@ -196,7 +234,7 @@ block main
                 upload-image-input
             )
             img(
-                src=""
+                src=helper.avatar
                 class="image-preview"
                 upload-image-preview
             )
@@ -215,6 +253,13 @@ block main
                 upload-healthCertificate-input
             )
             div(upload-healthCertificate-preview)
+                if (helper.healthCertificates.length > 0)
+                    each item in helper.healthCertificates 
+                        img(
+                            src=item
+                            class="image-preview"
+                            upload-image-preview
+                        )
         div(class="form-group form-check form-check-inline")
             input(
                 type="radio"
@@ -222,7 +267,7 @@ block main
                 id="statusActive"
                 name="status"
                 value="active"
-                checked
+                checked=(helper.status == "active") ? true : false
             )
             label(for="statusActive" class="form-check-label") Hoạt động
         div(class="form-group form-check form-check-inline")
@@ -232,13 +277,14 @@ block main
                 id="statusInActive"
                 name="status"
                 value="inactive"
+                checked=(helper.status == "inactive") ? true : false
             )
             label(for="statusInActive" class="form-check-label") Dừng hoạt động
         div(class="form-group")
             button(
                 type="submit"
                 class="btn btn-primary"
-            ) Tạo mới
+            ) Cập nhật
 
     script(src="/js/helper.js") 
         

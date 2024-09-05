@@ -8,7 +8,7 @@ block main
     if (staff.fullName)
         div(class="mb-4") Họ và tên: <b>#{staff.fullName}</b>
     
-    if (newBirthDate)
+    if (staff.birthDate)
         div(class="mb-4") Ngày sinh: <b>
         +formatDate(staff.birthDate)
         </b>
@@ -32,8 +32,8 @@ block main
                 style="width: 100px"
             )
 
-    if (staff.role_id)
-        div(class="mb-4") Phân quyền: <b>#{staff.role_id}</b>
+    if (staff.role)
+        div(class="mb-4") Phân quyền: <b>#{staff.role.title}</b>
 
     if (staff.status)
         div(class="mb-4")

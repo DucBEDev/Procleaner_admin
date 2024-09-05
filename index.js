@@ -42,9 +42,9 @@ app.set('view engine', 'pug');
 // Configuration public file
 app.use(express.static(`${__dirname}/public`));
 
-// // TinyMCE library for text editing
-// const path = require('path');
-// app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
+// TinyMCE library for text editing
+const path = require('path');
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 
 // App locals variables
 const systemConfig = require("./config/system");

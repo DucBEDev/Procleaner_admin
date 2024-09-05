@@ -1,5 +1,6 @@
 // Models
 const Staff = require("../models/staff.model");
+const Role = require("../models/role.model");
 
 // Config
 const md5 = require('md5');
@@ -9,6 +10,7 @@ const systemConfig = require("../config/system");
 const filterStatusHelper = require("../helpers/filterStatus");
 const searchHelper = require("../helpers/search");
 const paginationHelper = require("../helpers/pagination");
+const formatDateHelper = require("../helpers/formatDate");
 
 
 // [GET] /admin/staffs
@@ -51,6 +53,11 @@ module.exports.index = async (req, res) => {
                             .select("-password")
                             .limit(objectPagination.limitItems)
                             .skip(objectPagination.skip);
+    
+    for (const record of records) {
+        const role = await Role.findOne({ _id: record.role_id });
+        record.role = role.title;
+    }
 
     res.render('pages/staffs/index', {
         pageTitle: "Quản lý nhân viên",
@@ -63,8 +70,13 @@ module.exports.index = async (req, res) => {
 
 // [GET] /admin/staffs/create
 module.exports.create = async (req, res) => {
+    const roles = await Role.find({
+        deleted: false
+    });
+
     res.render('pages/staffs/create', {
-        pageTitle: "Thêm mới nhân viên"
+        pageTitle: "Thêm mới nhân viên",
+        roles: roles
     });
 }
 
@@ -167,12 +179,17 @@ module.exports.edit = async (req, res) => {
     };
 
     const staff = await Staff.findOne(find).select("-password");
-    let newBirthDate = staff.birthDate.toISOString().split('T')[0];
+    const newBirthDate = formatDateHelper(staff.birthDate);
+
+    const roles = await Role.find({
+        deleted: false
+    });
 
     res.render("pages/staffs/edit", {
         pageTitle: "Chỉnh sửa thông tin nhân viên",
         staff: staff,
-        newBirthDate: newBirthDate
+        newBirthDate: newBirthDate,
+        roles: roles
     })
 }
 
@@ -231,6 +248,11 @@ module.exports.detail = async (req, res) => {
     };
 
     const staff = await Staff.findOne(find).select("-password");
+
+    staff.role = await Role.findOne({
+        _id: staff.role_id,
+        deleted: false
+    });
 
     res.render("pages/staffs/detail", {
         pageTitle: "Chi tiết thông tin nhân viên",

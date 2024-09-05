@@ -25,26 +25,33 @@ if (formCreateHelper) {
 }
 // End Upload preview image
 
-// Display workingArea input when Choose job detail 
-const jobDetailRadio = document.querySelectorAll("input[name='jobDetail']");
+// Display district when select province
+const workingArea = document.querySelector("[workingArea]");
 
-if (jobDetailRadio.length > 0) {
-    const workingAreaFullTime = document.querySelector("[workingAreaFullTime]");
-    const workingAreaPartTime = document.querySelector("[workingAreaPartTime]");
-    
-    jobDetailRadio.forEach(button => {
-        button.addEventListener("change", (e) => {
-            const jobDetail = e.target.value;
+if (workingArea) {
+    const chooseProvinceSelect = workingArea.querySelector("[chooseProvinceSelect]");
 
-            if (jobDetail == "fullTime") {
-                workingAreaFullTime.classList.remove("d-none");
-                workingAreaPartTime.classList.add("d-none");
-            }
-            else {
-                workingAreaFullTime.classList.add("d-none");
-                workingAreaPartTime.classList.remove("d-none");
-            }
-        })
+    chooseProvinceSelect.addEventListener("change", (e) => {
+        fetch(`/admin/locations/fetch?province=${e.target.value}`)
+            .then(response => response.json())
+            .then(data => {
+                const chooseDistricts = workingArea.querySelector("[chooseDistricts]");
+                chooseDistricts.innerHTML = "";
+
+                data.forEach(location => {
+                    location.districts.forEach(item => {
+                        const div = document.createElement('div');
+
+                        div.innerHTML = `
+                            <input type="checkbox" name="districts" value=${item.district.split(" ").join(",")}>
+                            <label>${item.district}</label>
+                        `;
+
+                        chooseDistricts.appendChild(div);
+                    })
+                })
+            })
+                
     })
 }
-// End Display workingArea input when Choose job detail
+// End Display district when select province

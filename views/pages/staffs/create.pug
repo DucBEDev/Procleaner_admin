@@ -100,13 +100,10 @@ block main
             )
         div(class="form-group")
             label(for="role_id") Phân quyền *
-            input(
-                type="text"
-                id="role_id"
-                name="role_id"
-                class="form-control"
-                required 
-            )
+            select(name="role_id" id="role" class="form-control")
+                option(selected disabled) -- Chọn phân quyền --
+                each item in roles 
+                    option(value=item.id) #{item.title}
         div(class="form-group form-check form-check-inline")
             input(
                 type="radio"

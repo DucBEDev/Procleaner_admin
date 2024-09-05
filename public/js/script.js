@@ -100,7 +100,7 @@ if (checkboxMulti) {
         input.addEventListener("click", () => {
             const countChecked = checkboxMulti.querySelectorAll("input[name='id']:checked").length;
 
-            if (countChecked == inputCheckAll.length) {
+            if (countChecked == listInputsId.length) {
                 inputCheckAll.checked = true;
             }
             else {
