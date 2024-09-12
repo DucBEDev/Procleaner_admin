@@ -8,6 +8,7 @@ const locationRoutes = require("./location.route");
 const helperRoutes = require("./helper.route");
 const roleRoutes = require("./role.route");
 const serviceRoutes = require("./service.route");
+const requestRoutes = require("./request.route");
 
 module.exports = (app) => {
     const PATH_ADMIN = systemConfig.prefixAdmin;
@@ -18,4 +19,5 @@ module.exports = (app) => {
     app.use(PATH_ADMIN + '/helpers', helperRoutes);
     app.use(PATH_ADMIN + '/roles', roleRoutes);
     app.use(PATH_ADMIN + '/services', serviceRoutes);
+    app.use(PATH_ADMIN + '/requests', requestRoutes);
 }
