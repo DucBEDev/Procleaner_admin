@@ -5,8 +5,6 @@ const requestSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    startDate: Date,
-    endDate: Date,
     startTime: Date,
     endTime: Date,
     staff_id: String,
@@ -24,7 +22,10 @@ const requestSchema = new mongoose.Schema({
     },
     requestType: String,
     service_id: String,
-    negotiationCosts: String, // Giá thỏa thuận
+    negotiationCosts: {
+        type: Number,
+        default: 0
+    }, // Giá thỏa thuận
     status: {
         type: String,
         default: "notDone"

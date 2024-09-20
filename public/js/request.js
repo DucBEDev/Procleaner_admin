@@ -99,5 +99,3 @@ if (chooseEndTimeSelect) {
 } 
 // End Display start/end time input
 
-
-

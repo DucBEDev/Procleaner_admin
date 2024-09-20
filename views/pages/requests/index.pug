@@ -11,70 +11,32 @@ block main
     +alert-error(5000)
     
     h1 Quản lý đơn hàng
-
-    .card.mb-3 
-        .card-header Bộ lọc và Tìm kiếm 
-        .card-body 
-            .row 
-                .col-6
-                    //- +filter-status(filterStatus)
-                .col-6  
-                    //- +search(keyword)
-
-    .card.mb-3 
-        .card-header Sắp xếp theo 
-        .card-body 
-            .row 
-                .col-4 
-                    div(sort)
-                        select(
-                            class="form-control"
-                            name="sort"
-                            sort-select 
-                        )   
-                            option(value="staff_id-asc") CMND tăng dần
-                            option(value="staff_id-desc") CMND giảm dần
-                            option(value="fullName-asc") Tên tăng dần
-                            option(value="fullName-desc") Tên giảm dần
-
-                        button(
-                            class="btn btn-danger mt-2"
-                            sort-clear
-                        ) Clear
     
     .card.mb-3 
         .card-header Đơn hàng cần xử lý
         .card-body 
             .row
                 .col-8
-                    +form-change-multi(`${prefixAdmin}/staffs/change-multi?_method=PATCH`)
+                    //- +form-change-multi(`${prefixAdmin}/staffs/change-multi?_method=PATCH`)
                 .col-4 
                     a(
                         href=`${prefixAdmin}/requests/create`
                         class="btn btn-outline-success"
                     ) +Thêm mới
             
-            table(
-                    class="table table-hover table-sm"
-                    checkbox-multi
-                ) 
+            table(class="table table-hover table-sm") 
                     thead 
                         tr 
-                            th  
-                                input(type="checkbox" name="checkall")
                             th STT
                             th SĐT
                             th Loại yêu cầu
                             th Địa chỉ
                             th Trạng thái
                             th Ngày đặt yêu cầu
-                            th Tổng chi phí
                             th Hoạt động
                     tbody
-                        each item, index in processingRequest
+                        each item, index in processingRequests
                             tr 
-                                td 
-                                    input(type="checkbox" name="id" value=item.id)
                                 td #{index + 1}
                                 td #{item.customerInfo.phone}
                                 if (item.requestType == "shortTerm")
@@ -84,16 +46,21 @@ block main
                                 td #{item.customerInfo.address}
                                 if (item.status == "notDone")
                                     td Chưa tiến hành
+                                else if (item.status == "assigned")
+                                    td Chưa tiến hành (Đã giao việc)
+                                else if (item.status == "processing")
+                                    td Đang tiến hành
+                                else 
+                                    td Đã hoàn thành
                                 td
                                     +formatDate(item.orderDate)
-                                td 1k
                                 td
                                     a(
-                                        href=`${prefixAdmin}/staffs/detail/${item.id}`
+                                        href=`${prefixAdmin}/requests/detail/${item.id}`
                                         class="btn btn-secondary btn-sm"
                                     ) Chi tiết 
                                     a(
-                                        href=`${prefixAdmin}/staffs/edit/${item.id}`
+                                        href=`${prefixAdmin}/requests/edit/${item.id}`
                                         class="btn btn-warning btn-sm"
                                     ) Sửa
                                     button(
@@ -107,27 +74,19 @@ block main
     .card.mb-3 
         .card-header Đơn hàng chưa xác định chi phí
         .card-body 
-            table(
-                    class="table table-hover table-sm"
-                    checkbox-multi
-                ) 
+            table(class="table table-hover table-sm") 
                     thead 
                         tr 
-                            th  
-                                input(type="checkbox" name="checkall")
                             th STT
                             th SĐT
                             th Loại yêu cầu
                             th Địa chỉ
                             th Trạng thái
                             th Ngày đặt yêu cầu
-                            th Tổng chi phí
                             th Hoạt động
                     tbody
-                        each item, index in undeterminedCost
+                        each item, index in undeterminedCosts
                             tr 
-                                td 
-                                    input(type="checkbox" name="id" value=item.id)
                                 td #{index + 1}
                                 td #{item.customerInfo.phone}
                                 if (item.requestType == "shortTerm")
@@ -138,16 +97,15 @@ block main
                                 td Chờ liên hệ
                                 td
                                     +formatDate(item.orderDate)
-                                td 1k
                                 td
                                     a(
-                                        href=`${prefixAdmin}/staffs/detail/${item.id}`
-                                        class="btn btn-secondary btn-sm"
-                                    ) Chi tiết 
-                                    a(
-                                        href=`${prefixAdmin}/staffs/edit/${item.id}`
+                                        href=`${prefixAdmin}/requests/edit/${item.id}`
                                         class="btn btn-warning btn-sm"
                                     ) Sửa
+                                    a(
+                                        href=`${prefixAdmin}/requests/updateRequestCost/${item.id}`
+                                        class="btn btn-primary btn-sm"
+                                    ) Liên hệ
                                     button(
                                         class="btn btn-danger btn-sm"
                                         button-delete
@@ -156,17 +114,44 @@ block main
 
         //- +pagination(pagination)
 
-        form(
-            action=""
-            method="POST"
-            id="form-change-status"
-            data-path=`${prefixAdmin}/staffs/change-status`
-        )
+    .card.mb-3 
+        .card-header Lịch sử đơn hàng
+        .card-body 
+            table(class="table table-hover table-sm") 
+                    thead 
+                        tr 
+                            th STT
+                            th SĐT
+                            th Loại yêu cầu
+                            th Địa chỉ
+                            th Trạng thái
+                            th Ngày đặt yêu cầu
+                            th Hoạt động
+                    tbody
+                        each item, index in historyRequests
+                            tr 
+                                td #{index + 1}
+                                td #{item.customerInfo.phone}
+                                if (item.requestType == "shortTerm")
+                                    td Ngắn hạn 
+                                else 
+                                    td Dài hạn
+                                td #{item.customerInfo.address}
+                                td Đã hoàn thành
+                                td
+                                    +formatDate(item.orderDate)
+                                td
+                                    a(
+                                        href=`${prefixAdmin}/requests/detail/${item.id}`
+                                        class="btn btn-secondary btn-sm"
+                                    ) Chi tiết 
+
+        //- +pagination(pagination)
 
         form(
             action=""
             method="POST"
             id="form-delete-item"
-            data-path=`${prefixAdmin}/staffs/delete`
+            data-path=`${prefixAdmin}/requests/delete`
         )
                         
