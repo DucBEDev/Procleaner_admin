@@ -60,20 +60,17 @@ module.exports.index = async (req, res) => {
     });
 
     processingRequests.map(request => {
-        const deadline1 = moment(request.startTime).utc(); 
-        const deadline2 = moment(request.endTime).utc(); 
+        const startTime = moment(request.startTime).utc(); 
+        const endTime = moment(request.endTime).utc(); 
 
         // Get the current time
-        const now = moment();
+        const now = moment().utc();
+        now.add(7, 'hours');
 
-        // Calculate time distance (unit: seconds)
-        const duration1 = moment.duration(deadline1.diff(now));
-        const duration2 = moment.duration(deadline2.diff(now));
-
-        if ((duration1 < 0 && duration2 > 0) || (duration1 > 0 && duration2 < 0) || (duration1 == 0) || (duration2 == 0)) {
-            request.status = "processing";
+        if (now.isBetween(startTime, endTime)) {
+            request.status = "unconfirmed";
         }
-        else if (duration1 < 0 && duration2 < 0) {
+        else if (now.isAfter(startTime, endTime)) {
             request.status = "done";
         }
         else if (request.helper_id) {
