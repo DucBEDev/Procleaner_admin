@@ -59,7 +59,7 @@ module.exports.edit = async (req, res) => {
     );
 
     res.render('pages/roles/edit', {
-        pageTitle: "Chi tiết nhóm quyền",
+        pageTitle: "Sửa nhóm quyền",
         record: record
     });
 }

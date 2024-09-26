@@ -3,6 +3,7 @@ const Request = require("../models/request.model");
 const Location = require("../models/location.model");
 const Service = require("../models/service.model");
 const Helpers = require("../models/helper.model");
+const Customer = require("../models/customer.model");
 
 // Config 
 const systemConfig = require("../config/system");
@@ -155,6 +156,29 @@ module.exports.createPost = async (req, res) => {
 
     const request = new Request(req.body);
     await request.save();
+
+    const customer = await Customer.findOne({ phone: req.body.phone });
+    if (!customer) {
+        const createCustomer = new Customer({
+            fullName: req.body.customerInfo.fullName,
+            phone: req.body.customerInfo.phone,
+            addresses: [
+                {
+                    province: req.body.location.province,
+                    district: req.body.location.district,
+                    address: req.body.customerInfo.address
+                }
+            ],
+            status: "guest",
+            points: [
+                {
+                    updateDate: new Date(),
+                    point: 0
+                }
+            ]
+        });
+        await createCustomer.save();
+    }
 
     req.flash("success", "Tạo đơn hàng thành công");
     res.redirect(`${systemConfig.prefixAdmin}/requests`);

@@ -14,7 +14,6 @@ const requestSchema = new mongoose.Schema({
         loseThings: Boolean,
         breakThings: Boolean
     },
-    customer_id: String,
     customerInfo: {
         fullName: String,
         phone: String,
