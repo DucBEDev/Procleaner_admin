@@ -5,7 +5,7 @@ const CustomerSchema = new mongoose.Schema({
     phone: String,
     email: String,
     password: String,
-    status: String,
+    signedUp: Boolean, 
     points: [
         {
             point: Number,

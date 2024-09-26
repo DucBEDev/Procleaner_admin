@@ -7,6 +7,7 @@ const helperSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
+    baseFactor: Number, // Hệ số lương cơ bản
     birthDate: Date,
     phone: String,
     birthPlace: String,

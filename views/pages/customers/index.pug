@@ -25,7 +25,6 @@ block main
                             th Điểm khuyến mãi
                             th Trạng thái
                             th Hoạt động
-                        
                     tbody 
                         if (records.length > 0)
                             each item, index in records 
@@ -34,10 +33,10 @@ block main
                                     td #{item.fullName}
                                     td #{item.phone}
                                     td #{item.addresses[0].province} - #{item.addresses[0].district}
-                                    td #{item.email}
+                                    td #{item.signedUp == false ? "Không" : item.email}
                                     td #{item.totalPoints}
                                     td 
-                                        if (item.status == "guest")
+                                        if (item.signedUp == false)
                                             | Tài khoản khách 
                                         else 
                                             | Đã đăng nhập

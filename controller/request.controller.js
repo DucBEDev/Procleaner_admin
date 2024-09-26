@@ -169,7 +169,7 @@ module.exports.createPost = async (req, res) => {
                     address: req.body.customerInfo.address
                 }
             ],
-            status: "guest",
+            signedUp: false,
             points: [
                 {
                     updateDate: new Date(),
